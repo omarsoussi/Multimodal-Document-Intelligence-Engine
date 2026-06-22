@@ -1,0 +1,19 @@
+# Environments
+.env
+.env.local
+.env.*.local
+
+# Dependency directories
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+**/.venv/
+**/.ruff_cache/
+**/dist/
+
+# Local databases/data
+**/qdrant_data/
+
+# OS metadata
+.DS_Store
+Thumbs.db
