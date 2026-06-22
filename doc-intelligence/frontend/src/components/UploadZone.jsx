@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { FileImage, FileText, FileType2, UploadCloud } from 'lucide-react'
+import { FileImage, FileText, FileType2, Sparkles, UploadCloud } from 'lucide-react'
 import PropTypes from 'prop-types'
 
 import { uploadDocument } from '../api/client'
@@ -18,7 +18,6 @@ function UploadZone({ onUploaded, onToast }) {
     try {
       const document = await uploadDocument(file, setProgress)
       onUploaded(document)
-      onToast('Document ready', 'success')
     } catch (error) {
       onToast(error.response?.data?.detail || 'Upload failed', 'error')
     } finally {
@@ -34,7 +33,16 @@ function UploadZone({ onUploaded, onToast }) {
   }
 
   return (
-    <section className="border-b border-slate-200 bg-white p-5">
+    <section className="rounded-[28px] border border-white/70 bg-white/92 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
+      <div className="mb-3 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-slate-900">Upload document</p>
+          <p className="text-xs text-slate-500">Drop a file to index it for chat and analytics.</p>
+        </div>
+        <div className="rounded-full bg-emerald-50 p-2 text-emerald-500">
+          <Sparkles className="h-4 w-4" aria-hidden="true" />
+        </div>
+      </div>
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
@@ -48,14 +56,18 @@ function UploadZone({ onUploaded, onToast }) {
           setDragging(false)
           handleFiles(event.dataTransfer.files)
         }}
-        className={`flex min-h-44 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-5 text-center transition ${
-          dragging ? 'border-emerald-500 bg-emerald-50' : 'border-slate-300 bg-slate-50'
+        className={`flex min-h-48 w-full flex-col items-center justify-center rounded-[24px] border-2 border-dashed px-5 py-6 text-center transition ${
+          dragging
+            ? 'border-emerald-500 bg-[linear-gradient(135deg,rgba(16,185,129,0.12),rgba(255,255,255,0.9))]'
+            : 'border-slate-200 bg-[linear-gradient(180deg,rgba(241,245,249,0.95),rgba(255,255,255,0.95))]'
         }`}
       >
-        <UploadCloud className="mb-3 h-9 w-9 text-slate-500" aria-hidden="true" />
-        <span className="text-sm font-semibold text-slate-900">Upload document</span>
-        <span className="mt-1 text-xs text-slate-500">{supportedTypes}</span>
-        <span className="mt-4 flex gap-2 text-slate-500">
+        <div className="mb-4 rounded-full bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
+          <UploadCloud className="h-7 w-7 text-slate-500" aria-hidden="true" />
+        </div>
+        <span className="text-base font-semibold text-slate-900">Drop file here</span>
+        <span className="mt-2 text-xs text-slate-500">{supportedTypes}</span>
+        <span className="mt-4 flex gap-2 text-slate-400">
           <FileText className="h-5 w-5" aria-label="PDF" />
           <FileImage className="h-5 w-5" aria-label="Image" />
           <FileType2 className="h-5 w-5" aria-label="Word" />
@@ -70,8 +82,12 @@ function UploadZone({ onUploaded, onToast }) {
       />
       {uploading && (
         <div className="mt-4">
-          <progress value={progress} max="100" className="h-2 w-full accent-emerald-600" />
-          <p className="mt-1 text-xs text-slate-500">{progress}% uploaded</p>
+          <progress
+            className="h-2 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-slate-100 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-emerald-500 [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-emerald-500"
+            max="100"
+            value={progress}
+          />
+          <p className="mt-2 text-xs text-slate-500">{progress}% uploaded</p>
         </div>
       )}
     </section>

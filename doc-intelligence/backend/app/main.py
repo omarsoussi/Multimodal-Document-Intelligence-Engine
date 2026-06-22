@@ -15,8 +15,10 @@ from app.config import (
     get_settings,
 )
 from app.models.schemas import ErrorResponse
+from app.routers.conversations import router as conversations_router
 from app.routers.documents import router as documents_router
 from app.routers.query import router as query_router
+from app.routers.stats import router as stats_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -75,3 +77,5 @@ def _error_response(error: str, detail: str, status_code: int) -> JSONResponse:
 
 app.include_router(documents_router)
 app.include_router(query_router)
+app.include_router(conversations_router)
+app.include_router(stats_router)
