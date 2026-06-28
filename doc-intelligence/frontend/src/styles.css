@@ -6,9 +6,20 @@
   font-family: "Manrope", sans-serif;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d1b8ab transparent;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 body {
   min-height: 100vh;
-  background: #eef4f8;
+  background: #f4ede7;
   font-family: "Manrope", sans-serif;
 }
 
@@ -17,4 +28,99 @@ h2,
 h3,
 h4 {
   font-family: "Outfit", "Manrope", sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.rich-answer {
+  color: #334155;
+}
+
+.rich-answer > :first-child {
+  margin-top: 0;
+}
+
+.rich-answer > :last-child {
+  margin-bottom: 0;
+}
+
+.rich-answer h1,
+.rich-answer h2,
+.rich-answer h3 {
+  margin: 0.9rem 0 0.45rem;
+  color: #0f172a;
+  font-family: "Outfit", "Manrope", sans-serif;
+}
+
+.rich-answer h1 {
+  font-size: 1.35rem;
+}
+
+.rich-answer h2 {
+  font-size: 1.1rem;
+}
+
+.rich-answer h3 {
+  font-size: 1rem;
+}
+
+.rich-answer p,
+.rich-answer ul,
+.rich-answer ol,
+.rich-answer table,
+.rich-answer blockquote {
+  margin: 0.7rem 0;
+  line-height: 1.8;
+}
+
+.rich-answer ul,
+.rich-answer ol {
+  padding-left: 1.2rem;
+}
+
+.rich-answer li + li {
+  margin-top: 0.35rem;
+}
+
+.rich-answer strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.rich-answer code {
+  border-radius: 0.45rem;
+  background: #fff1ea;
+  padding: 0.16rem 0.38rem;
+  color: #b54736;
+}
+
+.rich-answer table {
+  width: 100%;
+  overflow: hidden;
+  border-collapse: collapse;
+  border-radius: 1rem;
+  border: 1px solid #ecd8cd;
+  background: #fffaf7;
+}
+
+.rich-answer thead {
+  background: #fff1ea;
+}
+
+.rich-answer th,
+.rich-answer td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid #f0e2d8;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.rich-answer blockquote {
+  border-left: 3px solid #d14e3f;
+  padding-left: 1rem;
+  color: #64748b;
 }

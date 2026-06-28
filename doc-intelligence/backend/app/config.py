@@ -39,6 +39,7 @@ DOCUMENTS_PREFIX = "/documents"
 QUERY_PREFIX = "/query"
 CONVERSATIONS_PREFIX = "/conversations"
 STATS_PREFIX = "/stats"
+TOOLS_PREFIX = "/tools"
 UPLOAD_PATH = "/upload"
 ROOT_PATH = ""
 DOC_ID_PATH = "/{doc_id}"
@@ -46,6 +47,7 @@ DOCUMENTS_TAG = "documents"
 QUERY_TAG = "query"
 CONVERSATIONS_TAG = "conversations"
 STATS_TAG = "stats"
+TOOLS_TAG = "tools"
 CONVERSATIONS_FILE = "conversations.json"
 
 GEMINI_QA_MODEL = "gemini-2.0-flash"
@@ -115,6 +117,10 @@ TOP_DOCUMENTS_LIMIT = 5
 TOP_KEYWORDS_LIMIT = 15
 TOP_KEYWORDS_PANEL_LIMIT = 10
 READING_WORDS_PER_MINUTE = 250
+CHAT_TOP_K_DEFAULT = 4
+CHAT_CONTEXT_CHAR_LIMIT = 700
+CHAT_TABLE_CITATION_LIMIT = 3
+SOFFICE_BINARY = "soffice"
 
 
 @lru_cache

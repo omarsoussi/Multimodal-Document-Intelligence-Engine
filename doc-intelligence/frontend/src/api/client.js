@@ -1,14 +1,21 @@
 import axios from 'axios'
 
 /**
- * @typedef {{ id: string, filename: string, chunk_count: number, uploaded_at: string }} DocumentMetadata
+ * @typedef {{ id: string, filename: string, chunk_count: number, uploaded_at: string, file_type: string, page_count: number, language: string, category: string, reading_minutes: number, summary: string }} DocumentMetadata
  * @typedef {{ page_number: number, chunk_index: number, chunk_text: string, score: number, source_filename: string }} Citation
  * @typedef {{ answer: string, citations: Citation[], model_used: string }} QueryResponse
  * @typedef {{ role: string, content: string, created_at: string, citations: Citation[] }} ConversationMessage
  * @typedef {{ id: string, title: string, doc_id: string | null, doc_filename: string | null, message_count: number, created_at: string, updated_at: string }} ConversationSummary
  * @typedef {{ id: string, title: string, doc_id: string | null, doc_filename: string | null, messages: ConversationMessage[], created_at: string, updated_at: string }} Conversation
- * @typedef {{ total_documents: number, total_chunks: number, total_pages: number, avg_chunks_per_doc: number, documents_by_date: { date: string, count: number }[], top_documents: { filename: string, chunk_count: number, uploaded_at: string, pages: number }[], storage_used_kb: number }} OverviewStats
- * @typedef {{ doc_id: string, filename: string, total_chunks: number, total_pages: number, avg_chunk_length: number, longest_chunk_length: number, shortest_chunk_length: number, chunks_per_page: { page: number, chunk_count: number }[], top_keywords: { word: string, count: number }[], uploaded_at: string, estimated_word_count: number }} DocumentStats
+ * @typedef {{ label: string, value: number }} BreakdownStat
+ * @typedef {{ doc_id: string, filename: string, file_type: string, category: string, language: string, total_pages: number, reading_minutes: number, summary: string, uploaded_at: string }} DocumentSpotlight
+ * @typedef {{ total_documents: number, total_languages: number, total_categories: number, total_reading_hours: number, documents_by_category: BreakdownStat[], documents_by_language: BreakdownStat[], documents_by_format: BreakdownStat[], reading_time_bands: BreakdownStat[], uploads_by_date: { date: string, count: number }[], library_highlights: string[], document_spotlights: DocumentSpotlight[] }} OverviewStats
+ * @typedef {{ metric: string, value: number }} RadarMetric
+ * @typedef {{ word: string, count: number }} KeywordStat
+ * @typedef {{ id: string, label: string, group: string, weight: number }} MindMapNode
+ * @typedef {{ source: string, target: string, weight: number }} MindMapEdge
+ * @typedef {{ nodes: MindMapNode[], edges: MindMapEdge[] }} MindMapGraph
+ * @typedef {{ doc_id: string, filename: string, file_type: string, detected_language: string, detected_category: string, uploaded_at: string, total_pages: number, estimated_word_count: number, reading_minutes: number, summary: string, key_takeaways: string[], top_keywords: KeywordStat[], topic_breakdown: BreakdownStat[], radar_profile: RadarMetric[], mind_map: MindMapGraph }} DocumentStats
  * @typedef {(progress: number) => void} ProgressHandler
  */
 
@@ -97,7 +104,7 @@ export const deleteDocument = async (docId) => {
  * @param {number} topK
  * @returns {Promise<QueryResponse>}
  */
-export const queryDocuments = async (question, docId, topK = 5) => {
+export const queryDocuments = async (question, docId, topK = 4) => {
   const response = await api.post('/query', { question, doc_id: docId, top_k: topK })
   return response.data
 }
@@ -138,7 +145,7 @@ export const getConversation = async (conversationId) => {
  * @param {number} topK
  * @returns {Promise<{ conversation: Conversation, answer: string, citations: Citation[], model_used: string }>}
  */
-export const sendMessage = async (conversationId, question, topK = 5) => {
+export const sendMessage = async (conversationId, question, topK = 4) => {
   const response = await api.post(`/conversations/${conversationId}/messages`, {
     question,
     top_k: topK
@@ -170,4 +177,76 @@ export const getOverviewStats = async () => {
 export const getDocumentStats = async (docId) => {
   const response = await api.get(`/stats/documents/${docId}`)
   return response.data
+}
+
+/**
+ * @param {'/tools/pdf-to-docx' | '/tools/docx-to-pdf' | '/tools/compress-pdf' | '/tools/split-pdf'} endpoint
+ * @param {FormData} formData
+ * @returns {Promise<string>}
+ */
+async function runTool(endpoint, formData) {
+  const response = await api.post(endpoint, formData, { responseType: 'blob' })
+  const filename = extractFilename(response.headers['content-disposition']) || 'download'
+  const blob = new Blob([response.data], {
+    type: response.headers['content-type'] || 'application/octet-stream'
+  })
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.URL.revokeObjectURL(url)
+  return filename
+}
+
+function extractFilename(contentDisposition) {
+  if (!contentDisposition) {
+    return null
+  }
+  const match = contentDisposition.match(/filename="?([^"]+)"?/)
+  return match?.[1] || null
+}
+
+/**
+ * @param {File} file
+ * @returns {Promise<string>}
+ */
+export const convertPdfToDocx = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return runTool('/tools/pdf-to-docx', formData)
+}
+
+/**
+ * @param {File} file
+ * @returns {Promise<string>}
+ */
+export const convertDocxToPdf = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return runTool('/tools/docx-to-pdf', formData)
+}
+
+/**
+ * @param {File} file
+ * @returns {Promise<string>}
+ */
+export const compressPdf = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return runTool('/tools/compress-pdf', formData)
+}
+
+/**
+ * @param {File} file
+ * @param {string} ranges
+ * @returns {Promise<string>}
+ */
+export const splitPdf = async (file, ranges) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('ranges', ranges)
+  return runTool('/tools/split-pdf', formData)
 }

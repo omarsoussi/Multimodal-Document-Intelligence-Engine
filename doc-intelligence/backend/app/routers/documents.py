@@ -15,8 +15,6 @@ from app.config import (
     DOCUMENTS_PREFIX,
     DOCUMENTS_TAG,
     PAYLOAD_DOC_ID,
-    PAYLOAD_SOURCE_FILENAME,
-    PAYLOAD_UPLOADED_AT,
     ROOT_PATH,
     UPLOAD_PATH,
     get_settings,
@@ -29,6 +27,7 @@ from app.models.schemas import (
     StoredFile,
 )
 from app.services.embedder import DocumentEmbedder
+from app.services.document_insights import build_profiles, profile_to_metadata
 from app.services.parser import DocumentParser
 from app.utils.file_handler import save_upload
 
@@ -140,22 +139,6 @@ def _doc_filter(doc_id: str) -> Filter:
 
 
 def _metadata_from_records(records: list[Record]) -> list[DocumentMetadata]:
-    documents: dict[str, DocumentMetadata] = {}
-    counts: dict[str, int] = {}
-    for record in records:
-        doc_id = str((record.payload or {}).get(PAYLOAD_DOC_ID, ""))
-        if not doc_id:
-            continue
-        counts[doc_id] = counts.get(doc_id, 0) + 1
-        documents[doc_id] = _metadata(record, doc_id, counts[doc_id])
-    return sorted(documents.values(), key=lambda item: item.uploaded_at, reverse=True)
-
-
-def _metadata(record: Record, doc_id: str, chunk_count: int) -> DocumentMetadata:
-    payload = record.payload or {}
-    return DocumentMetadata(
-        id=doc_id,
-        filename=str(payload.get(PAYLOAD_SOURCE_FILENAME, "")),
-        chunk_count=chunk_count,
-        uploaded_at=str(payload.get(PAYLOAD_UPLOADED_AT, "")),
-    )
+    profiles = build_profiles(records)
+    metadata = [profile_to_metadata(profile) for profile in profiles.values()]
+    return sorted(metadata, key=lambda item: item.uploaded_at, reverse=True)

@@ -22,6 +22,7 @@ import Dashboard from './components/Dashboard'
 import DocumentList from './components/DocumentList'
 import DocumentStatsPanel from './components/DocumentStatsPanel'
 import UploadZone from './components/UploadZone'
+import UtilityWorkbench from './components/UtilityWorkbench'
 
 function App() {
   const [documents, setDocuments] = useState([])
@@ -156,8 +157,8 @@ function App() {
   const activeDocId = activeConversation?.doc_id || null
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(125,211,252,0.35),rgba(255,255,255,0.92)_32%),radial-gradient(circle_at_top_right,rgba(196,181,253,0.26),transparent_28%),linear-gradient(180deg,#f3f7fb,#eef4f8)] px-3 py-3 text-slate-950 md:px-5 md:py-5">
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-4 lg:grid lg:min-h-[calc(100vh-2.5rem)] lg:grid-cols-[260px_minmax(0,1fr)_280px]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,220,200,0.7),rgba(248,242,236,0.96)_34%),radial-gradient(circle_at_top_right,rgba(198,237,232,0.52),transparent_30%),linear-gradient(180deg,#f4ede7,#f7f1eb)] px-3 py-3 text-slate-950 md:px-5 md:py-5">
+      <div className="mx-auto flex max-w-[1720px] flex-col gap-4 lg:grid lg:min-h-[calc(100vh-2.5rem)] lg:grid-cols-[300px_minmax(0,1fr)_360px]">
         <aside className="hidden lg:min-h-0 lg:min-w-0 lg:flex">
           <ConversationList
             conversations={conversations}
@@ -169,24 +170,25 @@ function App() {
         </aside>
 
         <section className="flex min-w-0 flex-col gap-4">
-          <header className="rounded-[32px] border border-white/70 bg-white/82 px-4 py-3 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur md:px-6">
-            <div className="flex items-center justify-between gap-4">
+          <header className="rounded-[34px] border border-white/60 bg-white/84 px-5 py-4 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur md:px-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setMobilePanel(mobilePanel === 'conversations' ? null : 'conversations')}
-                  className="rounded-2xl border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 lg:hidden"
+                  className="rounded-2xl border border-[#ead8ce] p-2 text-slate-600 transition hover:bg-[#fff8f4] lg:hidden"
                   aria-label="Open conversations"
                 >
                   <Menu className="h-5 w-5" aria-hidden="true" />
                 </button>
+
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Multimodal Document Intelligence Engine</p>
-                  <p className="text-xs text-slate-500">Chat, analytics, and document insights in one workspace.</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d14e3f]">Multimodal Document Intelligence</p>
+                  <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">A cleaner workspace for chat, summaries, and PDF tools</h1>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full bg-slate-100/80 p-1">
+              <div className="flex items-center gap-2 rounded-full border border-[#ead8ce] bg-[#fff8f4] p-1">
                 <TabButton
                   active={activeView === 'chat'}
                   icon={MessageSquare}
@@ -204,7 +206,7 @@ function App() {
               <button
                 type="button"
                 onClick={() => setMobilePanel(mobilePanel === 'documents' ? null : 'documents')}
-                className="rounded-2xl border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 lg:hidden"
+                className="rounded-2xl border border-[#ead8ce] p-2 text-slate-600 transition hover:bg-[#fff8f4] lg:hidden"
                 aria-label="Open documents"
               >
                 <PanelRightOpen className="h-5 w-5" aria-hidden="true" />
@@ -229,6 +231,7 @@ function App() {
 
         <aside className="hidden min-h-0 flex-col gap-4 lg:flex lg:min-w-0">
           <UploadZone onUploaded={handleUploaded} onToast={showToast} />
+          <UtilityWorkbench onToast={showToast} />
           <DocumentList
             documents={documents}
             activeDocId={activeDocId}
@@ -252,9 +255,10 @@ function App() {
       )}
 
       {mobilePanel === 'documents' && (
-        <MobileSheet title="Documents" onClose={() => setMobilePanel(null)}>
-          <div className="flex min-h-0 flex-1 flex-col gap-4">
+        <MobileSheet title="Documents & Tools" onClose={() => setMobilePanel(null)}>
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
             <UploadZone onUploaded={handleUploaded} onToast={showToast} />
+            <UtilityWorkbench onToast={showToast} />
             <DocumentList
               documents={documents}
               activeDocId={activeDocId}
@@ -279,7 +283,7 @@ function App() {
         <div
           role="status"
           className={`fixed right-5 top-5 z-[60] rounded-2xl px-4 py-3 text-sm font-semibold shadow-[0_20px_50px_rgba(15,23,42,0.18)] ${
-            toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
+            toast.type === 'success' ? 'bg-[#0f766e] text-white' : 'bg-[#b91c1c] text-white'
           }`}
         >
           {toast.message}
@@ -306,15 +310,15 @@ function TabButton({ active, icon: Icon, label, onClick }) {
 
 function MobileSheet({ title, children, onClose }) {
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/20 lg:hidden">
+    <div className="fixed inset-0 z-50 bg-slate-950/30 lg:hidden">
       <button type="button" className="absolute inset-0" onClick={onClose} aria-label="Close panel" />
-      <div className="absolute left-0 top-0 h-full w-full max-w-sm bg-white/96 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur">
+      <div className="absolute left-0 top-0 h-full w-full max-w-sm bg-[#fcf7f2] p-4 shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
         <div className="mb-4 flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-900">{title}</p>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="rounded-full border border-[#ead8ce] p-2 text-slate-500 transition hover:bg-[#fff8f4] hover:text-slate-900"
             aria-label="Close"
           >
             <X className="h-4 w-4" aria-hidden="true" />

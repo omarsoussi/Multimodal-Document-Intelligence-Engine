@@ -5,7 +5,12 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends tesseract-ocr libgomp1 \
+    && apt-get install -y --no-install-recommends \
+        libreoffice-core \
+        libreoffice-draw \
+        libreoffice-writer \
+        libgomp1 \
+        tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

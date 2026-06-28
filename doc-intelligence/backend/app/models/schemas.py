@@ -20,6 +20,12 @@ class DocumentMetadata(BaseModel):
     filename: str
     chunk_count: int
     uploaded_at: str
+    file_type: str = ""
+    page_count: int = 0
+    language: str = ""
+    category: str = ""
+    reading_minutes: int = 0
+    summary: str = ""
 
 
 class DocumentUploadResponse(DocumentMetadata):
@@ -42,7 +48,7 @@ class Citation(BaseModel):
 class QueryRequest(BaseModel):
     question: str = Field(min_length=1)
     doc_id: str | None = None
-    top_k: int = Field(default=5, ge=1, le=20)
+    top_k: int = Field(default=4, ge=1, le=20)
 
 
 class QueryResponse(BaseModel):
@@ -85,7 +91,7 @@ class ConversationCreateRequest(BaseModel):
 
 class ConversationMessageRequest(BaseModel):
     question: str = Field(min_length=1)
-    top_k: int = Field(default=5, ge=1, le=20)
+    top_k: int = Field(default=4, ge=1, le=20)
 
 
 class ConversationMessageResponse(BaseModel):
@@ -100,26 +106,58 @@ class DateCountPoint(BaseModel):
     count: int
 
 
-class TopDocumentStat(BaseModel):
+class BreakdownStat(BaseModel):
+    label: str
+    value: int
+
+
+class RadarMetric(BaseModel):
+    metric: str
+    value: int
+
+
+class MindMapNode(BaseModel):
+    id: str
+    label: str
+    group: str
+    weight: int = 1
+
+
+class MindMapEdge(BaseModel):
+    source: str
+    target: str
+    weight: int = 1
+
+
+class MindMapGraph(BaseModel):
+    nodes: list[MindMapNode]
+    edges: list[MindMapEdge]
+
+
+class DocumentSpotlight(BaseModel):
+    doc_id: str
     filename: str
-    chunk_count: int
+    file_type: str
+    category: str
+    language: str
+    total_pages: int
+    reading_minutes: int
+    summary: str
     uploaded_at: str
-    pages: int = 0
 
 
 class OverviewStats(BaseModel):
     total_documents: int
-    total_chunks: int
-    total_pages: int
-    avg_chunks_per_doc: float
-    documents_by_date: list[DateCountPoint]
-    top_documents: list[TopDocumentStat]
-    storage_used_kb: float
-
-
-class PageChunkStat(BaseModel):
-    page: int
-    chunk_count: int
+    total_languages: int
+    total_categories: int
+    total_reading_hours: float
+    documents_by_category: list[BreakdownStat]
+    documents_by_language: list[BreakdownStat]
+    documents_by_format: list[BreakdownStat]
+    reading_time_bands: list[BreakdownStat]
+    uploads_by_date: list[DateCountPoint]
+    library_highlights: list[str]
+    document_spotlights: list[DocumentSpotlight]
 
 
 class KeywordStat(BaseModel):
@@ -130,15 +168,19 @@ class KeywordStat(BaseModel):
 class DocumentStats(BaseModel):
     doc_id: str
     filename: str
-    total_chunks: int
-    total_pages: int
-    avg_chunk_length: float
-    longest_chunk_length: int
-    shortest_chunk_length: int
-    chunks_per_page: list[PageChunkStat]
-    top_keywords: list[KeywordStat]
+    file_type: str
+    detected_language: str
+    detected_category: str
     uploaded_at: str
+    total_pages: int
     estimated_word_count: int
+    reading_minutes: int
+    summary: str
+    key_takeaways: list[str]
+    top_keywords: list[KeywordStat]
+    topic_breakdown: list[BreakdownStat]
+    radar_profile: list[RadarMetric]
+    mind_map: MindMapGraph
 
 
 class ErrorResponse(BaseModel):

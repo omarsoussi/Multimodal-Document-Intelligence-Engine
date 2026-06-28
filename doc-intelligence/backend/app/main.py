@@ -19,6 +19,7 @@ from app.routers.conversations import router as conversations_router
 from app.routers.documents import router as documents_router
 from app.routers.query import router as query_router
 from app.routers.stats import router as stats_router
+from app.routers.tools import router as tools_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,3 +80,4 @@ app.include_router(documents_router)
 app.include_router(query_router)
 app.include_router(conversations_router)
 app.include_router(stats_router)
+app.include_router(tools_router)
